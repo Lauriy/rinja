@@ -1,36 +1,51 @@
 #!/usr/bin/env python
 
-# Taken from https://github.com/Kagami/chaptcha
+"""
+recognize CAPTCHA at 2ch.hk
+
+examples:
+  python {title} vis     -i captcha.png
+  python {title} collect -o captchas/ -k ag.txt
+  python {title} train   -i captchas/ -o my.net
+  python {title} ocr     -i captcha.png -n my.net
+  python {title} serve   -n my.net
+"""
 
 from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
-import argparse
-import errno
 import os
+import re
 import sys
-import threading
 import time
+import errno
+import argparse
+from datetime import datetime
+import threading
 import traceback
-
-import bs4
-import cv2
 import numpy as np
+import cv2
+try:
+    from fann2 import libfann
+except ImportError:
+    # Ubuntu < 16.04
+    from pyfann import libfann
 import requests
-from pyfann import libfann
+import bottle
+
 
 __title__ = 'chaptcha.py'
 __version__ = '0.0.1'
 __license__ = 'CC0'
-__doc__ = 'asd'
 
-NUM_CHARS = 4
-CAPTCHA_WIDTH = 200
-CAPTCHA_HEIGHT = 50
-CH_WIDTH = 20
-CH_HEIGHT = 45
-LINE_THICK = 1
+
+NUM_CHARS = 6
+CAPTCHA_WIDTH = 220
+CAPTCHA_HEIGHT = 80
+CH_WIDTH = 22
+CH_HEIGHT = 40
+LINE_THICK = 2
 # See <https://github.com/numpy/numpy/issues/7112>.
 _CONSTANT = str('constant')
 
@@ -43,38 +58,31 @@ def check_image(img):
 def get_image(fpath):
     img = cv2.imread(fpath, 0)
     check_image(img)
-
     return img
 
 
 def decode_image(data):
     img = cv2.imdecode(data, 0)
     check_image(img)
-
     return img
 
 
 def get_network(fpath):
     ann = libfann.neural_net()
     assert ann.create_from_file(fpath), 'cannot init network'
-
     return ann
 
 
 def get_ch_data(img):
     data = img.flatten() & 1
     assert len(data) == CH_WIDTH * CH_HEIGHT, 'bad data size'
-
     return data
 
 
-POSSIBLE_SYMBOLS = 'abcdefghijklmnopqrstuvwxyz0123456789'
-
-
-def make_ann_output(symbol):
-    out = [0.0] * len(POSSIBLE_SYMBOLS)
-    out[POSSIBLE_SYMBOLS.index(symbol)] = 1.0
-
+def make_ann_output(digit):
+    digit = int(digit)
+    out = [0.0] * 10
+    out[digit] = 1.0
     return out
 
 
@@ -98,28 +106,26 @@ def mkdirp(dpath):
 
 
 def _denoise(img):
-    img = cv2.fastNlMeansDenoising(img, None, 70, 7, 21)
+    img = cv2.fastNlMeansDenoising(img, None, 65, 5, 21)
     img = cv2.threshold(img, 128, 255, cv2.THRESH_BINARY_INV)[1]
-
     return img
 
 
 def _get_lines(img):
-    lines = cv2.HoughLinesP(img, 1, np.pi / 180, 100, minLineLength=100, maxLineGap=100)
+    lines = cv2.HoughLinesP(img, 1, np.pi / 180, 100,
+                            minLineLength=100, maxLineGap=100)
     if lines is None:
         lines = []
-
     return [line[0] for line in lines]
 
 
 def _preprocess(img):
     img = img.copy()
     img = _denoise(img)
-    # lines = _get_lines(img)
-    # for line in lines:
-    #     x1, y1, x2, y2 = line
-    #     cv2.line(img, (x1, y1), (x2, y2), 0, LINE_THICK)
-
+    lines = _get_lines(img)
+    for line in lines:
+        x1, y1, x2, y2 = line
+        cv2.line(img, (x1, y1), (x2, y2), 0, LINE_THICK)
     return img
 
 
@@ -140,12 +146,11 @@ def segment(img):
         assert pad_h >= 0, 'bad char height'
         pad_h1 = pad_h // 2
         pad_h2 = pad_h - pad_h1
-
         return np.pad(ch, ((pad_h1, pad_h2), (pad_w1, pad_w2)), _CONSTANT)
 
-    BLANK_THRESHHOLD = 2
-    DOTS_THRESHOLD = 5
-    CH_MIN_WIDTH = 5
+    BLANK_THRESHHOLD = 3
+    DOTS_THRESHOLD = 3
+    CH_MIN_WIDTH = 8
 
     # Search blank intervals.
     img = _preprocess(img)
@@ -173,13 +178,10 @@ def segment(img):
     blanks = [b for b in blanks if b[1] - b[0] >= BLANK_THRESHHOLD]
     blanks = sorted(blanks, key=lambda b: b[1] - b[0], reverse=True)[:5]
     # No more than one glued pair currently.
-    # assert len(blanks) >= 4, 'bad number of blanks'
+    assert len(blanks) >= 4, 'bad number of blanks'
     blanks = sorted(blanks, key=lambda b: b[0])
     # Add last (imaginary) blank to simplify following loop.
     blanks.append((prev_x if was_blank else CAPTCHA_WIDTH, 0))
-
-    # blanks = [(87, 89), (106, 108), (116, 118), (133, 135)]
-    # first_ch_x = 67
 
     # Get chars.
     chars = []
@@ -219,49 +221,7 @@ def segment(img):
             chars2.append(pad_ch(ch))
 
     assert len(chars2) == NUM_CHARS, 'bad number of chars'
-
     return chars2
-
-
-def vis_all_lines(fpath):
-    def to_rgb(img):
-        return cv2.merge([img] * 3)
-
-    HIGH_COLOR = (0, 255, 0)
-
-    orig = get_image(fpath)
-    with_lines = to_rgb(orig.copy())
-    for line in _get_lines(orig.copy()):
-        x1, y1, x2, y2 = line
-        cv2.line(with_lines, (x1, y1), (x2, y2), HIGH_COLOR, LINE_THICK)
-
-    res = np.concatenate((
-        to_rgb(orig),
-        with_lines,
-    ))
-    cv2.imshow('opencv-result', res)
-    cv2.waitKey(0)
-    cv2.destroyAllWindows()
-
-
-def denoise_all(captchas_dir):
-    def to_rgb(img):
-        return cv2.merge([img] * 3)
-
-    captchas_dir = os.path.abspath(captchas_dir)
-    captchas = os.listdir(captchas_dir)
-    for i, name in enumerate(captchas):
-        fpath = os.path.join(captchas_dir, name)
-        print(fpath)
-        orig = get_image(fpath)
-        denoised = _denoise(orig.copy())
-        res = np.concatenate((
-            # to_rgb(orig),
-            to_rgb(denoised),
-        ))
-        print(captchas_dir + '\denoised\\' + name)
-        cv2.imwrite(captchas_dir + '\denoised\\' + name, res)
-        time.sleep(0.5)
 
 
 def vis(fpath):
@@ -289,8 +249,9 @@ def vis(fpath):
         x1, y1, x2, y2 = line
         cv2.line(with_lines, (x1, y1), (x2, y2), HIGH_COLOR, LINE_THICK)
     processed = _preprocess(orig)
-    # cv2.imwrite('denoised/vis.png', processed)
-    with_rects = [np.pad(a, ((PAD_H,), (PAD_W,)), _CONSTANT) for a in ch_imgs]
+    # cv2.imwrite('vis.png', processed)
+    with_rects = [np.pad(a, ((PAD_H,), (PAD_W,)), _CONSTANT)
+                  for a in ch_imgs]
     with_rects = np.concatenate(with_rects, axis=1)
     with_rects = np.pad(with_rects, ((0,), (EXTRA_PAD_W,)), _CONSTANT)
     with_rects = to_rgb(with_rects)
@@ -315,7 +276,7 @@ def vis(fpath):
 def train(captchas_dir):
     NUM_INPUT = CH_WIDTH * CH_HEIGHT
     NUM_NEURONS_HIDDEN = NUM_INPUT // 3
-    NUM_OUTPUT = 36
+    NUM_OUTPUT = 10
     ann = libfann.neural_net()
     ann.create_standard_array((NUM_INPUT, NUM_NEURONS_HIDDEN, NUM_OUTPUT))
     # ann.set_activation_function_hidden(libfann.SIGMOID)
@@ -328,15 +289,16 @@ def train(captchas_dir):
     captchas = os.listdir(captchas_dir)
     report()
     for i, name in enumerate(captchas):
-        answer = name[:4]
+        answer = re.match(r'(\d{6})\.png$', name)
         if not answer:
             continue
+        answer = answer.group(1)
         fpath = os.path.join(captchas_dir, name)
         try:
             img = get_image(fpath)
             ch_imgs = segment(img)
-            for ch_img, symbol in zip(ch_imgs, answer):
-                ann.train(get_ch_data(ch_img), make_ann_output(symbol))
+            for ch_img, digit in zip(ch_imgs, answer):
+                ann.train(get_ch_data(ch_img), make_ann_output(digit))
         except Exception as exc:
             report('Error occured while processing {}: {}'.format(name, exc))
             report()
@@ -345,18 +307,16 @@ def train(captchas_dir):
             report('{}/{}'.format(i + 1, len(captchas)), progress=True)
     runtime = time.time() - start
     report('Done training on {}/{} captchas in {:.3f} seconds'.format(
-        succeed, len(captchas), runtime))
-
+           succeed, len(captchas), runtime))
     return ann
 
 
 def ocr(ann, img):
-    def get_symbol(ch_img):
+    def get_digit(ch_img):
         data = get_ch_data(ch_img)
         out = ann.run(data)
-        return POSSIBLE_SYMBOLS[out.index(max(out))]
-
-    return ''.join(map(get_symbol, segment(img)))
+        return str(out.index(max(out)))
+    return ''.join(map(get_digit, segment(img)))
 
 
 def ocr_bench(ann, captchas_dir):
@@ -368,9 +328,10 @@ def ocr_bench(ann, captchas_dir):
     full = 0
     report()
     for i, name in enumerate(captchas):
-        answer1 = name[:4]
+        answer1 = re.match(r'(\d{6})\.png$', name)
         if not answer1:
             continue
+        answer1 = answer1.group(1)
         total += NUM_CHARS
         fpath = os.path.join(captchas_dir, name)
         try:
@@ -387,14 +348,79 @@ def ocr_bench(ann, captchas_dir):
             report('{}/{}'.format(i + 1, len(captchas)), progress=True)
     runtime = time.time() - start
     report('{:.2f}% ({:.2f}% full) in {:.3f} seconds'.format(
-        correct / total * 100,
-        full / total * 100,
-        runtime))
+           correct / total * 100,
+           full / total * 100,
+           runtime))
+
+
+class FatalAntigateError(Exception):
+    pass
+
+
+def antigate_ocr(api_key, data, timeout=90, ext='png',
+                 is_numeric=True, min_len=6, max_len=6,
+                 run=None):
+    def check_run():
+        if run is None:
+            return True
+        else:
+            return run.is_set()
+
+    FIRST_SLEEP = 7
+    ATTEMPT_SLEEP = 2
+    start = datetime.now()
+
+    # Uploading captcha.
+    fields = {'key': api_key, 'method': 'post'}
+    if is_numeric:
+        fields['numeric'] = '1'
+    if min_len:
+        fields['min_len'] = str(min_len)
+    if max_len:
+        fields['max_len'] = str(max_len)
+    files = {'file': ('captcha.' + ext, data)}
+    res = requests.post('http://anti-captcha.com/in.php',
+                        data=fields, files=files).text
+    if res in [
+        'ERROR_WRONG_USER_KEY',
+        'ERROR_KEY_DOES_NOT_EXIST',
+        'ERROR_ZERO_BALANCE',
+        'ERROR_IP_NOT_ALLOWED',
+    ]:
+        raise FatalAntigateError(res)
+    elif not res.startswith('OK|'):
+        raise Exception(res)
+    captcha_id = res[3:]
+
+    # Getting captcha text.
+    fields2 = {
+        'key': api_key,
+        'action': 'get',
+        'id': captcha_id,
+    }
+    time.sleep(FIRST_SLEEP)
+    while check_run():
+        res = requests.get('http://anti-captcha.com/res.php',
+                           params=fields2).text
+        if res.startswith('OK|'):
+            return res[3:]
+        elif res == 'CAPCHA_NOT_READY':
+            delta = datetime.now() - start
+            if delta.seconds >= timeout or delta.days > 0:
+                raise Exception('getting captcha text timeout')
+            time.sleep(ATTEMPT_SLEEP)
+        else:
+            raise Exception(res)
+    raise Exception('antigate_ocr canceled')
 
 
 def get_captcha():
-    CAPTCHA_URL = 'http://statistics.e-register.ee/et/shareholders/'
-    CAPTCHA_IMAGE_URL_TEMPLATE = 'http://statistics.e-register.ee/graphics/captcha/%s.png'
+    CAPTCHA_URL = 'https://2ch.hk/makaba/captcha.fcgi'
+    CAPTCHA_FIELDS = {
+        'type': '2chaptcha',
+        'action': 'thread',
+        'board': 's',
+    }
     CHROME_UA = (
         'Mozilla/5.0 (Windows NT 6.1; WOW64) ' +
         'AppleWebKit/537.36 (KHTML, like Gecko) ' +
@@ -402,36 +428,50 @@ def get_captcha():
     )
     CAPTCHA_HEADERS = {
         'User-Agent': CHROME_UA,
-        'Referer': 'http://statistics.e-register.ee/',
+        'Referer': 'https://2ch.hk/s/',
     }
-    res = requests.get(CAPTCHA_URL, headers=CAPTCHA_HEADERS).text
-    soup = bs4.BeautifulSoup(res, 'html.parser')
-    captcha_id = soup.select('#captcha-id')[0]['value']
-    captcha_image_url = CAPTCHA_IMAGE_URL_TEMPLATE % captcha_id
-    image_request = requests.get(captcha_image_url, headers=CAPTCHA_HEADERS)
-    if image_request.headers.get('Content-Type') != 'image/png':
-        raise Exception('Bad CAPTCHA image request')
+    res = requests.get(CAPTCHA_URL, params=CAPTCHA_FIELDS,
+                       headers=CAPTCHA_HEADERS).text
+    if not res.startswith('CHECK\n'):
+        raise Exception('bad answer on captcha request')
+    captcha_id = res[6:]
+    fields2 = {
+        'type': '2chaptcha',
+        'action': 'image',
+        'id': captcha_id,
+    }
+    r = requests.get(CAPTCHA_URL, params=fields2, headers=CAPTCHA_HEADERS)
+    if r.headers.get('Content-Type') != 'image/png':
+        raise Exception('bad captcha result')
+    return r.content
 
-    return image_request.content, captcha_id
 
-
-def collect(run, captchas_dir, tmp_path):
+def collect(run, captchas_dir, tmp_path, api_key):
     while run.is_set():
         try:
             data = get_captcha()
-            name = data[1] + '.png'
+            answer = antigate_ocr(api_key, data, run=run)
+            if not re.match(r'\d{6}$', answer):
+                raise Exception('bad antigate answer {}'.format(answer))
+            name = answer + '.png'
             fpath = os.path.join(captchas_dir, name)
             # In order to not leave partial files.
-            open(tmp_path, 'wb').write(data[0])
+            open(tmp_path, 'wb').write(data)
             os.rename(tmp_path, fpath)
+        except FatalAntigateError as exc:
+            if run.is_set():
+                report('Fatal antigate error ({}), exiting'.format(exc))
+                run.clear()
+            return
         except Exception as exc:
             report('Error occured while collecting: {}'.format(exc))
         else:
             report('Saved {}'.format(name))
+        # Just in case antigate response was too fast.
         time.sleep(1)
 
 
-def run_collect_threads(captchas_dir):
+def run_collect_threads(captchas_dir, api_key):
     NUM_THREADS = 10
     SPAWN_DELAY = 0.5
 
@@ -443,9 +483,11 @@ def run_collect_threads(captchas_dir):
 
     for i in range(NUM_THREADS):
         tmp_path = os.path.join(captchas_dir, '.{}.tmp'.format(i))
-        thread = threading.Thread(target=collect, args=(run, captchas_dir, tmp_path))
+        thread = threading.Thread(target=collect,
+                                  args=(run, captchas_dir, tmp_path, api_key))
         threads.append(thread)
         thread.start()
+        # Slightly smooth initial fetch burst.
         time.sleep(SPAWN_DELAY)
 
     try:
@@ -458,13 +500,39 @@ def run_collect_threads(captchas_dir):
             thread.join()
 
 
+@bottle.post('/ocr')
+def serve():
+    bottle.response.set_header('Access-Control-Allow-Origin', '*')
+    try:
+        fh = bottle.request.files['file'].file
+    except Exception:
+        bottle.abort(400, 'No file provided.')
+    # TODO: Probably there is a better way to store obj ref?
+    ann = bottle.default_app().ann
+    img = decode_image(np.fromfile(fh, dtype=np.uint8))
+    return ocr(ann, img)
+
+
+def create_app():
+    app = bottle.default_app()
+    app.ann = get_network(os.environ['CHAPTCHA_NETFILE'])
+    return app
+
+
 def main():
+    doc = __doc__.format(title=__title__)
     parser = argparse.ArgumentParser(
+        prog=__title__,
+        description=doc,
         formatter_class=argparse.RawTextHelpFormatter)
     parser.add_argument(
         'mode',
-        choices=['vis', 'vis_all_lines', 'denoise_all', 'collect', 'train', 'ocr', 'ocr-bench'],
+        choices=['vis', 'collect', 'train', 'ocr', 'ocr-bench', 'serve'],
         help='operational mode')
+    parser.add_argument(
+        '-V', '--version',
+        action='version',
+        version='%(prog)s ' + __version__)
     parser.add_argument(
         '-i', dest='infile', metavar='infile',
         help='input file/directory')
@@ -472,21 +540,24 @@ def main():
         '-o', dest='outfile', metavar='outfile',
         help='output file/directory')
     parser.add_argument(
+        '-k', dest='keyfile', metavar='keyfile',
+        help='antigate key file')
+    parser.add_argument(
         '-n', dest='netfile', metavar='netfile',
         help='neural network')
+    parser.add_argument(
+        '-b', dest='host', metavar='host',
+        default='127.0.0.1',
+        help='listening address (default: %(default)s)')
+    parser.add_argument(
+        '-p', dest='port', metavar='port',
+        type=int, default=28228,
+        help='listening port (default: %(default)s)')
     opts = parser.parse_args(sys.argv[1:])
     if opts.mode == 'vis':
         if opts.infile is None:
             parser.error('specify input captcha')
         vis(opts.infile)
-    elif opts.mode == 'vis_all_lines':
-        if opts.infile is None:
-            parser.error('specify input captcha')
-        vis_all_lines(opts.infile)
-    elif opts.mode == 'denoise_all':
-        if opts.infile is None:
-            parser.error('specify input directory with captchas')
-        denoise_all(opts.infile)
     elif opts.mode == 'train':
         if opts.infile is None:
             parser.error('specify input directory with captchas')
@@ -494,10 +565,6 @@ def main():
             parser.error('specify output file for network data')
         ann = train(opts.infile)
         ann.save(opts.outfile)
-    elif opts.mode == 'collect':
-        if opts.outfile is None:
-            parser.error('specify output directory for captchas')
-        run_collect_threads(opts.outfile)
     elif opts.mode == 'ocr':
         if opts.infile is None:
             parser.error('specify input captcha')
@@ -513,6 +580,19 @@ def main():
             parser.error('specify network file')
         ann = get_network(opts.netfile)
         ocr_bench(ann, opts.infile)
+    elif opts.mode == 'collect':
+        if opts.outfile is None:
+            parser.error('specify output directory for captchas')
+        if opts.keyfile is None:
+            parser.error('specify antigate key file')
+        api_key = open(opts.keyfile, 'r').read().strip()
+        run_collect_threads(opts.outfile, api_key)
+    elif opts.mode == 'serve':
+        if opts.netfile is None:
+            parser.error('specify network file')
+        ann = get_network(opts.netfile)
+        bottle.default_app().ann = ann
+        bottle.run(host=opts.host, port=opts.port)
 
 
 if __name__ == '__main__':
