@@ -98,14 +98,14 @@ def mkdirp(dpath):
 
 
 def _denoise(img):
-    img = cv2.fastNlMeansDenoising(img, None, 70, 7, 21)
+    img = cv2.fastNlMeansDenoising(img, None, 85, 5, 21)
     img = cv2.threshold(img, 128, 255, cv2.THRESH_BINARY_INV)[1]
 
     return img
 
 
 def _get_lines(img):
-    lines = cv2.HoughLinesP(img, 1, np.pi / 180, 100, minLineLength=100, maxLineGap=100)
+    lines = cv2.HoughLinesP(img, 1, np.pi / 180, 50, minLineLength=50, maxLineGap=100)
     if lines is None:
         lines = []
 
@@ -115,10 +115,10 @@ def _get_lines(img):
 def _preprocess(img):
     img = img.copy()
     img = _denoise(img)
-    # lines = _get_lines(img)
-    # for line in lines:
-    #     x1, y1, x2, y2 = line
-    #     cv2.line(img, (x1, y1), (x2, y2), 0, LINE_THICK)
+    lines = _get_lines(img)
+    for line in lines:
+        x1, y1, x2, y2 = line
+        cv2.line(img, (x1, y1), (x2, y2), 0, LINE_THICK)
 
     return img
 
@@ -143,9 +143,9 @@ def segment(img):
 
         return np.pad(ch, ((pad_h1, pad_h2), (pad_w1, pad_w2)), _CONSTANT)
 
-    BLANK_THRESHHOLD = 2
+    BLANK_THRESHHOLD = 1
     DOTS_THRESHOLD = 5
-    CH_MIN_WIDTH = 5
+    CH_MIN_WIDTH = 7
 
     # Search blank intervals.
     img = _preprocess(img)
@@ -170,6 +170,7 @@ def segment(img):
             was_blank = True
             prev_x = x
         x += 1
+    print (first_ch_x)
     blanks = [b for b in blanks if b[1] - b[0] >= BLANK_THRESHHOLD]
     blanks = sorted(blanks, key=lambda b: b[1] - b[0], reverse=True)[:5]
     # No more than one glued pair currently.
@@ -177,6 +178,7 @@ def segment(img):
     blanks = sorted(blanks, key=lambda b: b[0])
     # Add last (imaginary) blank to simplify following loop.
     blanks.append((prev_x if was_blank else CAPTCHA_WIDTH, 0))
+    print (blanks)
 
     # blanks = [(87, 89), (106, 108), (116, 118), (133, 135)]
     # first_ch_x = 67
@@ -254,13 +256,15 @@ def denoise_all(captchas_dir):
         fpath = os.path.join(captchas_dir, name)
         print(fpath)
         orig = get_image(fpath)
-        denoised = _denoise(orig.copy())
+        #denoised = _denoise(orig.copy())
+        preprocessed = _preprocess(orig)
         res = np.concatenate((
             # to_rgb(orig),
-            to_rgb(denoised),
+            # to_rgb(denoised),
+            to_rgb(preprocessed),
         ))
-        print(captchas_dir + '\denoised\\' + name)
-        cv2.imwrite(captchas_dir + '\denoised\\' + name, res)
+        print(captchas_dir + '\\..\\denoised\\' + name)
+        cv2.imwrite(captchas_dir + '\\..\\denoised\\' + name, res)
         time.sleep(0.5)
 
 
