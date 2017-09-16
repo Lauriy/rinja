@@ -1,7 +1,6 @@
-import urllib
-
 import bs4
 import requests
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.files.base import ContentFile
 from django.core.urlresolvers import reverse_lazy
 from django.http import HttpResponseRedirect
@@ -15,7 +14,7 @@ class HomeView(TemplateView):
     template_name = 'home.html'
 
 
-class CaptchaCreate(CreateView):
+class CaptchaCreate(LoginRequiredMixin, CreateView):
     model = Captcha
     form_class = CaptchaAddForm
     success_url = reverse_lazy('captcha_add')

@@ -6,3 +6,4 @@ Pillow
 psycopg2
 django-compressor
 beautifulsoup4
+uWSGI
