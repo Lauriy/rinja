@@ -1,6 +1,8 @@
+venv/
+.idea/
+collected/
+denoised/
+
 *.pyc
-venv
-.idea
 my.net
-collected
-denoised
+core/settings/local.py
