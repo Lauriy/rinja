@@ -6,7 +6,7 @@ SECRET_KEY = 'a^7qui@h+h7i87b^qwfsuzw&1k3w9axa!4m57^llq6%0h*&ou@'
 
 DEBUG = True
 
-ALLOWED_HOSTS = ['rinja.indoorsman.ee']
+ALLOWED_HOSTS = ['stocks.indoorsman.ee']
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -15,6 +15,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'bootstrap4',
+    'compressor',
+    'rinja'
 ]
 
 MIDDLEWARE = [
@@ -27,13 +30,12 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'core.urls'
+ROOT_URLCONF = 'rinja.urls'
 
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'templates')]
-        ,
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -46,7 +48,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'core.wsgi.application'
+WSGI_APPLICATION = 'rinja.wsgi.application'
 
 DATABASES = {
     'default': {
@@ -81,3 +83,14 @@ USE_L10N = True
 USE_TZ = True
 
 STATIC_URL = '/static/'
+
+STATICFILES_FINDERS = (
+    'django.contrib.staticfiles.finders.FileSystemFinder',
+    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
+    'compressor.finders.CompressorFinder',
+)
+
+STATIC_ROOT = 'static-cache'
+
+COMPRESS_CSS_FILTERS = ['compressor.filters.cssmin.rCSSMinFilter']
+COMPRESS_JS_FILTERS = ['compressor.filters.jsmin.JSMinFilter']

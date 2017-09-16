@@ -5,4 +5,4 @@ denoised/
 
 *.pyc
 my.net
-core/settings/local.py
+rinja/settings/local.py
