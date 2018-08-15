@@ -1,9 +1,0 @@
-django
-django-bootstrap4
-py-moneyed
-django-money
-Pillow
-psycopg2
-django-compressor
-beautifulsoup4
-uWSGI
