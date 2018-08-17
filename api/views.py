@@ -5,6 +5,7 @@ import bs4
 import requests
 from django.core.files.base import ContentFile
 from rest_framework import generics
+from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
 
 from api.models import Captcha, Stock
@@ -54,10 +55,12 @@ class GuessCaptcha(generics.RetrieveUpdateAPIView):
                                                                  serializer.validated_data['answer'])
         validation_page = requests.get(validation_url, cookies=dict(PHPSESSID=instance.session_id))
         soup = bs4.BeautifulSoup(validation_page.text, 'html.parser')
-        print(validation_url)
-        print(soup)
-
-        self.perform_update(serializer)
+        try:
+            shareholders_table = soup.select('.most-numbers')[0]
+            print (shareholders_table)
+            self.perform_update(serializer)
+        except:
+            raise ValidationError('Failed to validate CAPTCHA answer', 400)
 
         if getattr(instance, '_prefetched_objects_cache', None):
             # If 'prefetch_related' has been applied to a queryset, we need to
