@@ -68,3 +68,8 @@ class GuessCaptcha(generics.RetrieveUpdateAPIView):
             instance._prefetched_objects_cache = {}
 
         return Response(serializer.data)
+
+
+class ListCaptcha(generics.ListAPIView):
+    queryset = Captcha.objects.all()
+    serializer_class = CaptchaSerializer
