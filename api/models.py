@@ -42,3 +42,14 @@ class Stock(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class Holder(models.Model):
+    stock = models.ForeignKey(Stock)
+    name = models.CharField(blank=False, null=False, max_length=255)
+    amount = models.IntegerField(blank=False, null=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    modified_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.name

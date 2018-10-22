@@ -50,6 +50,7 @@ class GuessCaptcha(generics.RetrieveUpdateAPIView):
         serializer.is_valid(raise_exception=True)
 
         # Get random stock to try the captcha answer on
+        # TODO: Get one that hasn't been updated today first
         stock = Stock.objects.order_by('?').first()
         validation_url = self.captcha_validation_url_template % (stock.isin, instance.md5,
                                                                  serializer.validated_data['answer'])

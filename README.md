@@ -6,5 +6,5 @@ Main objective is to try out DRF + React and while doing so, not make something 
 * pip install -r requirements.txt
 * pipenv install
 * npm install
-* pipenv shell && python manage.py migrate && python manage.py serve
+* pipenv shell && python manage.py migrate && python manage.py runserver
 * npm run dev
