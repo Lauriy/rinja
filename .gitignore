@@ -1,8 +1,2 @@
-venv/
-.idea/
-collected/
-denoised/
-
-*.pyc
-my.net
-rinja/settings/local.py
+/venv/
+/rinja/vision-credentials.json

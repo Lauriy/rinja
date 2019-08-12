@@ -1,0 +1,20 @@
+[
+  {
+    "model": "auth.user",
+    "pk": 1,
+    "fields": {
+      "password": "pbkdf2_sha256$150000$XRDHZuynJ2c0$D9e0Q1Vj3wnywLjMdt5mR8AgS8ioKyZNyIaQdT2Cl0E=",
+      "last_login": "2019-04-10T19:01:06.563Z",
+      "is_superuser": true,
+      "username": "lauri",
+      "first_name": "Lauri",
+      "last_name": "Elias",
+      "email": "lauri@indoorsman.ee",
+      "is_staff": true,
+      "is_active": true,
+      "date_joined": "2019-04-10T19:01:03.254Z",
+      "groups": [],
+      "user_permissions": []
+    }
+  }
+]

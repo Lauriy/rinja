@@ -1,0 +1,27 @@
+version: '3'
+
+services:
+  postgres:
+    image: 'postgres:11-alpine'
+    container_name: 'postgres'
+    ports:
+      - 5434:5432
+    environment:
+      - POSTGRES_DB=rinja
+      - POSTGRES_USER=rinja
+      - POSTGRES_PASSWORD=saladus
+    volumes:
+      - ./postgresql:/var/lib/postgresql
+  rinja:
+    build: .
+    image: laurielias/rinja:latest
+    container_name: rinja
+    ports:
+      - 8001:8000 # Django
+    volumes:
+      - .:/home/docker/rinja
+    environment:
+      - PYTHONUNBUFFERED=1
+      - GOOGLE_APPLICATION_CREDENTIALS=/home/docker/rinja/rinja/vision-credentials.json
+    depends_on:
+      - postgres
