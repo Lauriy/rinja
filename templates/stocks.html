@@ -1,0 +1,28 @@
+{% extends '_base.html' %}
+
+{% block content %}
+    <table class="table is-striped">
+        <thead>
+        <tr>
+            <th>Ticker</th>
+            <th>Nominal price</th>
+            <th>Nominal MCap</th>
+            <th>Actual price</th>
+            <th>Actual MCap</th>
+            <th>MCap multiplier</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for stock in stocks %}
+            <tr>
+                <td>{{ stock.ticker }}</td>
+                <td>{{ stock.nominal_share_price }}</td>
+                <td>{{ stock.nominal_market_cap }}</td>
+                <td>{{ stock.latest_market_share_price }}</td>
+                <td>{{ stock.latest_real_market_cap }}</td>
+                <td>{{ stock.mcap_ratio }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}
