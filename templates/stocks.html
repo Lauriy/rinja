@@ -1,26 +1,20 @@
 {% extends '_base.html' %}
 
 {% block content %}
-    <table class="table is-striped">
+    <table id="rinja-all-stocks-table">
         <thead>
         <tr>
-            <th>Ticker</th>
-            <th>Nominal price</th>
-            <th>Nominal MCap</th>
-            <th>Actual price</th>
-            <th>Actual MCap</th>
-            <th>MCap multiplier</th>
+            {% for k, v in stocks.0.items %}
+                <th>{{ k }}</th>
+            {% endfor %}
         </tr>
         </thead>
         <tbody>
         {% for stock in stocks %}
             <tr>
-                <td>{{ stock.ticker }}</td>
-                <td>{{ stock.nominal_share_price }}</td>
-                <td>{{ stock.nominal_market_cap }}</td>
-                <td>{{ stock.latest_market_share_price }}</td>
-                <td>{{ stock.latest_real_market_cap }}</td>
-                <td>{{ stock.mcap_ratio }}</td>
+                {% for k, v in stock.items %}
+                    <td>{{ v }}</td>
+                {% endfor %}
             </tr>
         {% endfor %}
         </tbody>

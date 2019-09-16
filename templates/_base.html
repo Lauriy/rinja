@@ -4,11 +4,15 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Hello Bulma!</title>
-    {% compress css %}
-        <link rel="stylesheet" href="{% static 'css/bulma-0.7.5.css' %}">
-    {% endcompress %}
-    {#<script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>#}
+    <title>Stokid</title>
+    {#    {% compress css %}#}
+    {#        <link rel="stylesheet" href="{% static 'css/fontawesome-5.10.2.css' %}">#}
+    {#        <link rel="stylesheet" href="{% static 'css/bulma-0.7.5.css' %}">#}
+    {#        <link rel="stylesheet" href="{% static 'css/jquery.dataTables-1.10.19.css' %}">#}
+    {#        <link rel="stylesheet" href="{% static 'css/dataTables.bulma.css' %}">#}
+    {#    {% endcompress %}#}
+    <link rel="stylesheet" type="text/css"
+          href="https://cdn.datatables.net/v/zf-6.4.3/jq-3.3.1/jszip-2.5.0/dt-1.10.18/b-1.5.6/b-colvis-1.5.6/b-html5-1.5.6/r-2.2.2/datatables.min.css"/>
 </head>
 <body>
 <section class="section">
@@ -16,5 +20,27 @@
         {% block content %}{% endblock %}
     </div>
 </section>
+{#{% compress js %}#}
+{#    <script src="{% static 'js/jquery-3.4.1.js' %}"></script>#}
+{#    <script src="{% static 'js/jquery.dataTables-1.10.19.js' %}"></script>#}
+{#    <script src="{% static 'js/jquery.dataTables.buttons.colVis-1.5.6.js' %}"></script>#}
+{#    <script src="{% static 'js/dataTables.bulma.js' %}"></script>#}
+{#{% endcompress %}#}
+
+
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.36/pdfmake.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.36/vfs_fonts.js"></script>
+<script type="text/javascript"
+        src="https://cdn.datatables.net/v/zf-6.4.3/jq-3.3.1/jszip-2.5.0/dt-1.10.18/b-1.5.6/b-colvis-1.5.6/b-html5-1.5.6/r-2.2.2/datatables.min.js"></script>
+<script type="text/javascript">
+    $('#rinja-all-stocks-table').DataTable({
+        dom: 'Bfrtip',
+        buttons: [
+            'copyHtml5', 'excelHtml5', 'pdfHtml5', 'csvHtml5', 'colvis'
+        ],
+        paging: false,
+        responsive: true,
+    });
+</script>
 </body>
 </html>
