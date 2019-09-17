@@ -2,7 +2,7 @@ import os
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-SECRET_KEY = os.environ['APP_SECRET_KEY']
+SECRET_KEY = os.environ.get('APP_SECRET_KEY', None)
 
 DEBUG = os.environ.get('APP_DEBUG') == '1'
 
@@ -16,6 +16,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'compressor',
+    'rest_framework',
     'rinja'
 ]
 
@@ -62,9 +63,11 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'rinja',
         'USER': 'rinja',
-        'PASSWORD': os.environ['APP_DB_PASSWORD'],
-        'HOST': 'postgres',
-        'PORT': '5432'
+        'PASSWORD': os.environ.get('APP_DB_PASSWORD', 'saladus'),
+        # 'HOST': 'postgres',
+        # 'PORT': '5432'
+        'HOST': 'localhost',
+        'POST': '5434'
     }
 }
 
@@ -82,6 +85,12 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
+
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
+    ]
+}
 
 LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'UTC'

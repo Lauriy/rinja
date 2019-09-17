@@ -4,6 +4,12 @@ from djmoney.models.fields import MoneyField
 currency_choices = [('EUR', 'Euro')]
 
 
+class StockScrapingResult(object):
+    def __init__(self, **kwargs):
+        for field in ('id', 'ticker'):
+            setattr(self, field, kwargs.get(field, None))
+
+
 class Stock(models.Model):
     ticker = models.CharField(blank=False, null=False, max_length=5)
     name = models.CharField(blank=False, null=False, max_length=255)

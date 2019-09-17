@@ -2,9 +2,22 @@ import datetime
 
 from django.http import HttpResponse
 from django.template import loader
+from rest_framework import viewsets
+from rest_framework.response import Response
 
 from rinja.scraper import retrieve_general_market_data_for_date
+from rinja.serializers import StockScrapingResultSerializer
 
+
+class AllStocksViewset(viewsets.ViewSet):
+    serializer_class= StockScrapingResultSerializer
+
+    def list(self, request):
+        now = datetime.datetime.now()
+        stocks = retrieve_general_market_data_for_date(now.year, now.month, now.day)
+        serializer = self.serializer_class(instance=stocks, many=True)
+
+        return Response(serializer.data)
 
 def all_stocks(request):
     template = loader.get_template('stocks.html')
