@@ -12,6 +12,11 @@ services:
       - POSTGRES_PASSWORD=saladus
     volumes:
       - ./postgresql:/var/lib/postgresql
+  redis:
+    image: 'redis:5-alpine'
+    container_name: 'redis'
+    ports:
+      - 6379:6379
   rinja:
     build: .
     image: laurielias/rinja:latest
@@ -28,3 +33,4 @@ services:
       - GOOGLE_APPLICATION_CREDENTIALS=/home/docker/rinja/rinja/vision-credentials.json
     depends_on:
       - postgres
+      - redis

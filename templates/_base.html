@@ -11,8 +11,8 @@
 </head>
 <body>
 <header>
-    <div class="collapse bg-dark" id="rinja-navbar-header">
-        <div class="container">
+    <div class="collapse" id="rinja-navbar-header">
+        <div class="container-fluid">
             <div class="row">
                 <div class="col-sm-8 col-md-7 py-4">
                     <h4 class="text-white">About</h4>
@@ -31,8 +31,8 @@
             </div>
         </div>
     </div>
-    <div class="navbar navbar-dark bg-dark shadow-sm">
-        <div class="container d-flex justify-content-between">
+    <div class="navbar shadow-sm">
+        <div class="container-fluid d-flex justify-content-between">
             <a href="#" class="navbar-brand d-flex align-items-center">
                 <strong>{% trans 'Stonks' %}</strong>
             </a>
@@ -43,7 +43,7 @@
         </div>
     </div>
 </header>
-<main role="main" class="bg-dark">
+<main role="main">
     <div class="container-fluid">
         {% block content %}{% endblock %}
     </div>
@@ -58,9 +58,15 @@
         buttons: [
             'copyHtml5', 'excelHtml5', 'pdfHtml5', 'csvHtml5', 'colvis'
         ],
-        order: [[11, 'desc']],
+        // order: [[11, 'desc']],
+        ajax: {url: '/api/v1/stocks/', dataSrc: ''},
+        columns: [
+            {data: 'ticker'},
+            {data: 'name'},
+            {data: 'last_price'},
+            {data: 'change_percentage'}
+        ],
         paging: false,
-        search: false,
         responsive: true,
     });
 </script>

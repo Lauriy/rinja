@@ -64,10 +64,10 @@ DATABASES = {
         'NAME': 'rinja',
         'USER': 'rinja',
         'PASSWORD': os.environ.get('APP_DB_PASSWORD', 'saladus'),
-        # 'HOST': 'postgres',
-        # 'PORT': '5432'
-        'HOST': 'localhost',
-        'POST': '5434'
+        'HOST': 'postgres',
+        'PORT': '5432'
+        # 'HOST': 'localhost',
+        # 'POST': '5434'
     }
 }
 
@@ -86,11 +86,11 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-REST_FRAMEWORK = {
-    'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
-    ]
-}
+# REST_FRAMEWORK = {
+#     'DEFAULT_PERMISSION_CLASSES': [
+#         'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
+#     ]
+# }
 
 LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'UTC'
@@ -99,3 +99,16 @@ USE_L10N = True
 USE_TZ = True
 
 STATIC_URL = '/static/'
+
+CACHES = {
+    'default': {
+        'BACKEND': 'redis_cache.RedisCache',
+        'LOCATION': 'redis:6379',
+        'OPTIONS': {
+            'DB': 1,
+            'PARSER_CLASS': 'redis.connection.HiredisParser',
+            'CONNECTION_POOL_CLASS': 'redis.BlockingConnectionPool',
+            'PICKLE_VERSION': -1,
+        },
+    },
+}
