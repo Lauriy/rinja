@@ -4,7 +4,7 @@
 `docker-compose up`
 
 ## Tests
-- Haven't bothered yet
+`pytest`
 
 ## Production
 - has separate docker-compose-live.yml that needs manual filling
@@ -13,4 +13,4 @@
 
 ## Misc.
 - positions are updated with a delay of some days (up to 3?)
-- price delay should be ~ 15 minutes
+- general stock listing price delay should be ~ 15 minutes

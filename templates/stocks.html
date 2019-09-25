@@ -1,8 +1,11 @@
 {% extends '_base.html' %}
 
+{% load i18n %}
+
 {% block content %}
     <table class="table table-striped" id="rinja-all-stocks-table">
         <thead>
+        <tr>{% trans 'Refreshes every 30 seconds, results are cached for 5 minutes' %}</tr>
         <tr>
             <th>Ticker</th>
             <th>Name</th>

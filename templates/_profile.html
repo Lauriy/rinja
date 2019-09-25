@@ -1,0 +1,8 @@
+{% extends '_base.html' %}
+
+{% load i18n %}
+
+{% block content %}
+    <header><h1>{% trans "Your profile" %}</h1></header>
+    {% block profile_sub_content %}{% endblock %}
+{% endblock %}

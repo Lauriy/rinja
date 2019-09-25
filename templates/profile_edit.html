@@ -1,0 +1,16 @@
+{% extends '_profile.html' %}
+
+{% load i18n socialaccount %}
+
+{% block profile_sub_content %}
+    <h3>{% trans "Edit your profile" %}</h3>
+    <h5>
+        {% url 'account_change_password' as change_form %}
+        {% blocktrans %}
+            Change your password <a title="Change password" href="{{ change_form }}">here</a>.
+        {% endblocktrans %}
+    </h5>
+    <h5>
+        <a href="{% provider_login_url "google" process="connect" %}">{% trans "Connect a Google account" %}</a>
+    </h5>
+{% endblock %}
