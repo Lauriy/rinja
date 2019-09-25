@@ -17,6 +17,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'compressor',
     'rest_framework',
+    'debug_toolbar',
     'rinja'
 ]
 
@@ -28,6 +29,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'debug_toolbar.middleware.DebugToolbarMiddleware'
 ]
 
 ROOT_URLCONF = 'rinja.urls'
@@ -112,3 +114,17 @@ CACHES = {
         },
     },
 }
+
+STOCKS_CACHE_TTL = 5 * 60
+
+INTERNAL_IPS = [
+    '127.0.0.1',
+    '10.0.2.2'
+]
+
+# Docker
+if DEBUG:
+    import socket
+
+    hostname, _, ips = socket.gethostbyname_ex(socket.gethostname())
+    INTERNAL_IPS += [ip[:-1] + '1' for ip in ips]
