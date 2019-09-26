@@ -1,3 +1,4 @@
+from django.contrib.auth.models import User
 from django.db import models
 from djmoney.models.fields import MoneyField
 
@@ -56,3 +57,13 @@ class Captcha(models.Model):
 
     def __str__(self):
         return f'{self.pk} - {self.answer}'
+
+
+class WatchlistEntry(models.Model):
+    user = models.ForeignKey(User, related_name='watchlist', on_delete=models.CASCADE)
+    ticker = models.CharField(blank=False, null=False, max_length=5)
+    created = models.DateTimeField(auto_now_add=True)
+    modified = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f'{self.user.pk} - {self.ticker}'

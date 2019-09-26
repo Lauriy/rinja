@@ -1,18 +1,20 @@
+from typing import Any, Dict
+
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import User
-from django.http import HttpResponse
-from django.template import loader
 from django.urls import reverse
-from django.views.generic import UpdateView
+from django.views.generic import UpdateView, TemplateView
 
 
-def all_stocks(request):
-    template = loader.get_template('stocks.html')
-    context = {
+class MarketListingView(TemplateView):
+    template_name = 'stocks.html'
 
-    }
+    def get_context_data(self, **kwargs: Any) -> Dict[str, Any]:
+        data = super().get_context_data(**kwargs)
+        watchlist_param = self.request.GET.get('watchlist', 'false')
+        data['is_watchlist'] = watchlist_param == 'true'
 
-    return HttpResponse(template.render(context, request))
+        return data
 
 
 class ProfileEditView(LoginRequiredMixin, UpdateView):
