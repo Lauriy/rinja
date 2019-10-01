@@ -1,0 +1,56 @@
+server {
+    listen 443 ssl http2;
+    listen [::]:443 ssl http2;
+
+    server_name stocks.indoorsman.ee;
+
+    ssl_certificate /etc/letsencrypt/live/stocks.indoorsman.ee/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/stocks.indoorsman.ee/privkey.pem;
+    ssl_trusted_certificate /etc/letsencrypt/live/stocks.indoorsman.ee/chain.pem;
+
+    include nginxconfig.io/security.conf;
+
+    # Python
+    location / {
+        proxy_pass http://127.0.0.1:8002;
+		include nginxconfig.io/proxy.conf;
+    }
+
+    # Django media
+    location /media/ {
+        alias $base/media/;
+    }
+
+    # Django static
+    location /static/ {
+        alias $base/static/;
+    }
+
+    include nginxconfig.io/general.conf;
+}
+
+server {
+    listen 443 ssl http2;
+    listen [::]:443 ssl http2;
+
+    server_name *.stocks.indoorsman.ee;
+
+    ssl_certificate /etc/letsencrypt/live/stocks.indoorsman.ee/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/stocks.indoorsman.ee/privkey.pem;
+    ssl_trusted_certificate /etc/letsencrypt/live/stocks.indoorsman.ee/chain.pem;
+
+    return 301 https://stocks.indoorsman.ee$request_uri;
+}
+
+server {
+    listen 80;
+    listen [::]:80;
+
+    server_name .stocks.indoorsman.ee;
+
+    include nginxconfig.io/letsencrypt.conf;
+
+    location / {
+        return 301 https://stocks.indoorsman.ee$request_uri;
+    }
+}
