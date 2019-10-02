@@ -4,6 +4,8 @@ WORKDIR /home/docker/rinja
 
 COPY requirements.txt ./
 
+RUN apt-get update && apt-get install libfann-dev python3-fann2 swig -y
+
 RUN pip install --upgrade setuptools pip wheel && \
     pip wheel -r requirements.txt --wheel-dir=./wheels/
 
@@ -12,6 +14,9 @@ ENTRYPOINT ["pytest"]
 FROM python:3.7-slim AS deployer
 
 LABEL maintainer="Lauri Elias <lauri.elias@indoorsman.ee>"
+
+RUN apt-get update && apt-get install libfann-dev python3-fann2 swig python-opencv -y && apt-get autoremove -y \
+    && apt-get autoclean
 
 WORKDIR /home/docker/rinja
 

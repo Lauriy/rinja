@@ -48,8 +48,8 @@ class StockPosition(models.Model):
 
 # Keep these around to train own neural net once Google credit runs out: https://github.com/Kagami/chaptcha
 class Captcha(models.Model):
-    md5 = models.CharField(max_length=32, blank=False, null=False)
-    session_id = models.CharField(max_length=35, blank=False, null=False)
+    md5 = models.CharField(max_length=32, blank=True, null=True)
+    session_id = models.CharField(max_length=35, blank=True, null=True)
     image = models.ImageField(upload_to='media/captchas/', blank=False, null=False)
     answer = models.CharField(max_length=4, blank=False, null=False)
     created = models.DateTimeField(auto_now_add=True)

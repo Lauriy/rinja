@@ -30,7 +30,7 @@ services:
       - APP_SECRET_KEY=moxqms%4zujsgd!c*y#36d!7#dh2e)+of-zla+)z9m09e)cvb%
       - APP_DB_PASSWORD=saladus
       - APP_DEBUG=1
-      - GOOGLE_APPLICATION_CREDENTIALS=/home/docker/rinja/rinja/vision-credentials.json
+      - GOOGLE_APPLICATION_CREDENTIALS=/home/docker/rinja/rinja/credentials/vision-credentials.json
     depends_on:
       - postgres
       - redis

@@ -17,7 +17,6 @@ class Command(BaseCommand):
         google_vision_client = vision.ImageAnnotatorClient()
         stock = all_supported_stocks[0]
         while True:
-        #for stock in all_supported_stocks[:1]:
             shareholders_retrieved = False
             while shareholders_retrieved is False:
                 captcha_input = None
@@ -35,20 +34,16 @@ class Command(BaseCommand):
                         captcha_input = vision_response.text_annotations[0].description.strip()
                     except IndexError:
                         continue
-                print(f'Trying CAPTCHA with answer {captcha_input} on stock {stock.ticker} with session ID {session_id}')
+                print(
+                    f'Trying CAPTCHA with answer {captcha_input} on stock {stock.ticker} with session ID {session_id}')
                 holdings_url = f'https://nasdaqcsd.com/statistics/et/shareholders?security={stock.isin}&captcha[id]=' \
                                f'{captcha_id}&captcha[input]={captcha_input}'
                 holdings_response = requests.get(holdings_url, cookies=dict(PHPSESSID=session_id))
                 holdings_soup = bs4.BeautifulSoup(holdings_response.text, 'html.parser')
-                #try:
-                # metadata_table = holdings_soup.select('table')[0]
                 tables = holdings_soup.select('.table-striped')
                 if not len(tables):
                     print(f'{len(tables)} is not enough tables')
                     continue
-                # with open('last_result.txt', 'a') as f:
-                #     f.write(str(shareholders_table))
-                # print(shareholders_table)
                 content_file = ContentFile(image_content)
                 captcha = Captcha(
                     md5=captcha_id,
@@ -56,8 +51,6 @@ class Command(BaseCommand):
                     answer=captcha_input
                 )
                 captcha.save()
-                captcha.image.save(str(captcha.pk) + '.png', content_file, False)
+                captcha.image.save(str(captcha.answer) + '.png', content_file, False)
                 captcha.save()
                 shareholders_retrieved = True
-                # except IndexError:
-                #     continue
