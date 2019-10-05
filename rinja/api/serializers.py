@@ -1,7 +1,7 @@
 from djmoney.contrib.django_rest_framework import MoneyField
 from rest_framework import serializers
 
-from rinja.models import StockScrapingResult
+from rinja.models import StockScrapingResult, WatchlistEntry
 
 
 class StockScrapingResultSerializer(serializers.Serializer):
@@ -43,3 +43,9 @@ class StockScrapingResultSerializer(serializers.Serializer):
             setattr(instance, field, value)
 
         return instance
+
+
+class WatchlistEntrySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = WatchlistEntry
+        fields = '__all__'

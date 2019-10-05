@@ -1,2 +1,15 @@
-vision-credentials.json
-socialaccount_socialapp.json
+/venv/
+/rinja/credentials/vision.json
+/rinja/fixtures/socialaccount_socialapp.json
+/rinja_tests/.coverage
+/rinja_tests/htmlcov/
+/.coverage
+/my.net
+/last_result.txt
+/stocks.indoorsman.ee.nginx
+/.pytest_cache/
+/.htmlcov/
+/.idea/
+/media/
+__pycache__/
+/static-cache/

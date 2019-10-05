@@ -1,3 +1,4 @@
 MAILTO="laurileet@gmail.com"
-0 10-16 * * 1-5 docker exec -it rinja python manage.py get_stock_prices
+# This will be run on demand, but since it's cached, no more often than every 5 minutes
+# 0 10-16 * * 1-5 docker exec -it rinja python manage.py get_stock_prices
 0 23 * * * docker exec -it rinja python manage.py scrape_all_stocks

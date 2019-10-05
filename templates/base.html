@@ -4,10 +4,24 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="csrf-token" content="{{ csrf_token }}">
     <title>{% trans 'Stonks' %}</title>
     <link rel="stylesheet" type="text/css"
           href="https://cdn.datatables.net/v/bs4-4.1.1/jq-3.3.1/jszip-2.5.0/dt-1.10.18/b-1.5.6/b-colvis-1.5.6/b-html5-1.5.6/r-2.2.2/datatables.min.css"/>
+    <link rel="stylesheet" type="text/css"
+          href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css"/>
     <link rel="stylesheet" type="text/css" href="{% static 'css/rinja.css' %}"/>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-149479599-1"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+
+        function gtag() {
+            dataLayer.push(arguments);
+        }
+
+        gtag('js', new Date());
+        gtag('config', 'UA-149479599-1');
+    </script>
 </head>
 <body>
 <div class="d-flex flex-column flex-md-row align-items-center p-3 px-md-4 mb-3 bg-white border-bottom box-shadow">
@@ -30,6 +44,45 @@
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.36/vfs_fonts.js"></script>
 <script type="text/javascript"
         src="https://cdn.datatables.net/v/bs4-4.1.1/jq-3.3.1/jszip-2.5.0/dt-1.10.18/b-1.5.6/b-colvis-1.5.6/b-html5-1.5.6/r-2.2.2/datatables.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+<!--FIXME: move JS to proper template without causing any loading order issues-->
+<script type="text/javascript">
+    $.ajaxSetup({
+        beforeSend: function (xhr, settings) {
+            xhr.setRequestHeader('X-CSRFToken', '{{ csrf_token }}');
+        }
+    });
+    $(document).on('click', '.rinja-follow-button', (event) => {
+        $.ajax('/api/v1/stocks/follow/' + $(event.target).data('ticker') + '/', {
+            method: 'PUT',
+            success: () => {
+                toastr.success('Updated')
+            },
+            error: () => {
+                toastr.error('Something went wrong')
+            }
+        })
+    });
+</script>
+<script type="text/javascript">
+    toastr.options = {
+        'closeButton': true,
+        'debug': false,
+        'newestOnTop': false,
+        'progressBar': false,
+        'positionClass': 'toast-top-right',
+        'preventDuplicates': false,
+        'onclick': null,
+        'showDuration': '300',
+        'hideDuration': '1000',
+        'timeOut': '5000',
+        'extendedTimeOut': '1000',
+        'showEasing': 'swing',
+        'hideEasing': 'linear',
+        'showMethod': 'fadeIn',
+        'hideMethod': 'fadeOut'
+    }
+</script>
 <script type="text/javascript">
     const isWatchlist = '{{ is_watchlist }}' === 'True';
     const myTable = $('#rinja-all-stocks-table').DataTable({
@@ -43,7 +96,7 @@
             {
                 data: 'ticker',
                 render: (data, type, row, meta) => {
-                    return data + '<button type="button" class="btn btn-link">Watch</button>'
+                    return data + '<button type="button" class="btn btn-link rinja-follow-button" data-ticker="' + data + '">Watch/unwatch</button>'
                 }
             },
             {data: 'name'},

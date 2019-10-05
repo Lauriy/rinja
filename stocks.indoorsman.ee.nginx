@@ -18,12 +18,12 @@ server {
 
     # Django media
     location /media/ {
-        alias $base/media/;
+        alias /home/rinja/media/;
     }
 
     # Django static
     location /static/ {
-        alias $base/static/;
+        alias /home/rinja/static/;
     }
 
     include nginxconfig.io/general.conf;

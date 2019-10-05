@@ -37,13 +37,14 @@ class StockPosition(models.Model):
     stock = models.ForeignKey(Stock, on_delete=models.CASCADE)
     holder = models.CharField(blank=False, null=False, max_length=255)
     amount = models.IntegerField(blank=False, null=False)
-    at_date = models.DateField(blank=False, null=False)
+    # TODO: Think about this
+    # at_date = models.DateField(blank=False, null=False)
     is_insider = models.BooleanField(default=False)
     created = models.DateTimeField(auto_now_add=True)
     modified = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return f'{self.stock} - {self.holder} - {self.at_date} - {self.amount}'
+        return f'{self.stock} - {self.holder} - {self.amount}'
 
 
 # Keep these around to train own neural net once Google credit runs out: https://github.com/Kagami/chaptcha

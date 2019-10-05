@@ -1,10 +1,12 @@
-from django.conf.urls import url
+from django.urls import path, include
+from rest_framework.routers import DefaultRouter
 
-from rinja.api.views import AllStocksViewset, SubscriptionViewset
+from rinja.api.views import AllStocksViewset, WatchlistViewset
+
+router = DefaultRouter()
+router.register(r'stocks', AllStocksViewset, basename='StockScrapingResult')
+router.register(r'stocks/follow', WatchlistViewset, basename='WatchlistEntry')
 
 urlpatterns = [
-    url(r'^stocks/', AllStocksViewset.as_view({'get': 'list'}), name='api-list-all-stocks'),
-    url(r'^stocks/follow/(?P<pk>[-\w]+)/', SubscriptionViewset.as_view({'post': 'update'}),
-        name='api-toggle-followed-stock'),
-
+    path('', include(router.urls)),
 ]

@@ -1,3 +1,14 @@
 /venv/
-/rinja/credentials/vision-credentials.json
+/rinja/credentials/vision.json
 /rinja/fixtures/socialaccount_socialapp.json
+/rinja_tests/.coverage
+/rinja_tests/htmlcov/
+/.coverage
+/my.net
+/last_result.txt
+/htmlcov/
+/.idea/
+__pycache__/
+/media/
+/static-cache/
+
