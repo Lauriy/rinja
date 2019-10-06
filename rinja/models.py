@@ -6,6 +6,7 @@ currency_choices = [('EUR', 'Euro')]
 
 
 class StockScrapingResult(object):
+    # TODO: Is this init needed?
     def __init__(self, **kwargs):
         for field in ('id', 'ticker'):
             setattr(self, field, kwargs.get(field, None))

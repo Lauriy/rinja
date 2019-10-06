@@ -12,7 +12,7 @@ from rest_framework.response import Response
 from rinja.api.serializers import StockScrapingResultSerializer, WatchlistEntrySerializer
 from rinja.forms import ApiStocksListingRequestSchema
 from rinja.models import WatchlistEntry
-from rinja.scraper import retrieve_general_market_data
+from rinja.scraper import Scraper
 
 
 class AllStocksViewset(viewsets.ViewSet):
@@ -25,7 +25,8 @@ class AllStocksViewset(viewsets.ViewSet):
             is_watchlist = form.cleaned_data['watchlist']
         stocks = cache.get('cached_stocks', None)
         if not stocks:
-            stocks = retrieve_general_market_data()
+            scraper = Scraper()
+            stocks = scraper.retrieve_general_market_data()
             cache.set('cached_stocks', stocks, settings.STOCKS_CACHE_TTL)
         if is_watchlist:
             if not request.user:

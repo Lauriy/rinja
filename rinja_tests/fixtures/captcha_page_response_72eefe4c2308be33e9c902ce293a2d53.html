@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html>
+ <head>
+    <meta charset="utf-8" />
+	<title>NasdaqCSD - Shareholders</title>
+	<meta http-equiv="X-UA-Compatible" content="IE=Edge" >
+<meta name="viewport" content="width=device-width, initial-scale=1" >
+    <link rel="shortcut icon" type="image/ico" href="/statistics/wp-content/themes/nasdaqcsd/favicon.ico" />
+	<link href="/statistics/wp-content/themes/nasdaqcsd/styles.css?_=2018-09-13" media="screen" rel="stylesheet" type="text/css" >
+<link href="/statistics/statistics_new.css?_=2018-11-15-1" media="screen" rel="stylesheet" type="text/css" >
+
+
+<script type="text/javascript" src="/statistics/wp-content/themes/nasdaqcsd/scripts/vendors/modernizr.custom.min.js"></script>
+<script type="text/javascript" src="/statistics/wp-content/themes/nasdaqcsd/scripts/vendors/jquery.min.js"></script>
+<script type="text/javascript" src="/statistics/wp-content/themes/nasdaqcsd/scripts/vendors/jquery.matchHeight.min.js"></script>
+<script type="text/javascript" src="/statistics/wp-content/themes/nasdaqcsd/scripts/vendors/datatables.min.js?_=2018-05-25"></script>
+<script type="text/javascript" src="/statistics/wp-content/themes/nasdaqcsd/scripts/vendors/jquery.nanoscroller.min.js"></script>
+<script type="text/javascript" src="/statistics/wp-content/themes/nasdaqcsd/scripts/vendors/moment.min.js"></script>
+<script type="text/javascript" src="/statistics/wp-content/themes/nasdaqcsd/scripts/vendors/pikaday.min.js"></script>
+<script type="text/javascript" src="/statistics/wp-content/themes/nasdaqcsd/scripts/vendors/pikaday.jquery.min.js"></script>
+<script type="text/javascript" src="/statistics/wp-content/themes/nasdaqcsd/scripts/vendors/bootstrap.min.js"></script>
+<script type="text/javascript" src="/statistics/wp-content/themes/nasdaqcsd/scripts/custom.js"></script>
+<script type="text/javascript" src="/statistics/js/statistics.js?_=2018-05-24"></script>
+<script type='text/javascript'>
+App.lang = 'en';
+App.init();
+</script>
+
+</head>
+<body class="lang-en page-shareholders">
+<div id="ajax-loading"></div>
+
+<div class="wrapper">
+
+	<!-- header -->
+      <header class="main-header__section">
+        <div class="main-header">
+          <h1 class="main-header__logo"><a href="/" title=""><img src="/statistics/wp-content/themes/nasdaqcsd/gfx/logo-primary.svg" alt="" width="150" height="43" /><span class="sr-only">Nasdaq</span></a></h1>
+          <nav class="main-header__langs hidden-xs hidden-sm">
+            <h2 class="sr-only">Choose webiste language</h2>
+            <div class="btn-group angeled-group">
+               <button type="button"
+                    class="btn btn-default dropdown-toggle"
+                    data-toggle="dropdown"
+                    aria-haspopup="true"
+                    aria-expanded="false">En<span class="caret"></span>
+              </button>
+              <ul class="dropdown-menu">
+                                <li><a href="/statistics/et/shareholders" title="Eesti">Et</a></li>                <li><a href="/statistics/lv/shareholders" title="Latviešu valoda">Lv</a></li>                <li><a href="/statistics/lt/shareholders" title="Lietuviškai">Lt</a></li>              </ul>
+            </div>
+          </nav>
+
+                    <div class="main-header__right">
+            <nav class="main-header__nav hidden-xs hidden-sm">
+              <h2 class="sr-only">Main navigation</h2>
+              <ul id="menu-primary-eng" class="header-nav"><li id="menu-item-138" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-has-children menu-item-138"><a href="/services/">Services</a></li>
+<li id="menu-item-109" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-has-children menu-item-109"><a href="/about-us/">About Us</a></li>
+<li id="menu-item-170" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-170"><a href="/statistics/en/summary">Statistics</a></li>
+</ul>            </nav>
+            <nav class="main-header__cta hidden-xs hidden-sm">
+              <h2 class="sr-only">CTA navigation</h2>
+              <div class="main-header__cta-inner">
+                  <a class="btn btn-cta hidden-xs hidden-sm" href="/self-service-portals/">Self-service portals</a>
+              </div>
+            </nav>
+          </div>
+
+          <nav class="main-header__nav--mobile visible-xs-block visible-sm-block">
+            <button class="dropdown-toggle x trigger-mobile-menu visible-xs-block visible-sm-block" type="button" data-toggle="dropdown" title="Menu"><span class="lines"><span class="sr-only">Open mobile menu</span></span></button>
+            <div class="dropdown-menu dropdown-menu-right">
+              <div class="dropdown-menu__content">
+                <header class="dropdown-menu__content-header">
+                  <div class="btn-group angeled-group btn-group__langswitch--mobile">
+                    <button type="button"
+                        class="btn btn-default btn-stop-propagation"
+                        data-toggle="collapse" data-target="#langCollapse" aria-expanded="false"
+                        aria-expanded="false" aria-controls="langCollapse"
+                        >En<span class="caret"></span>
+                    </button>
+                    <div class="collapse collapse-langselect" id="langCollapse">
+                    <ul class="dropdown-langs">
+                                                <li><a href="/statistics/et/shareholders" title="Eesti">Et</a></li>                        <li><a href="/statistics/lv/shareholders" title="Latviešu valoda">Lv</a></li>                        <li><a href="/statistics/lt/shareholders" title="Lietuviškai">Lt</a></li>                    </ul>
+                    </div>
+                  </div>
+                </header>
+                <main class="dropdown-menu__content-body"><ul id="menu-primary-eng-1" class="menu-mobile"><li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-has-children menu-item-138"><a href="/services/">Services</a></li>
+<li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-has-children menu-item-109"><a href="/about-us/">About Us</a></li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-170"><a href="/statistics/en/summary">Statistics</a></li>
+</ul>       </main>
+        <footer class="dropdown-menu__content-footer">
+          <a class="btn btn-block btn-primary" href="/self-service-portals/">Self-service portals</a>
+        </footer>
+                      </div>
+            </div>
+          </nav>
+        </div>
+      </header>
+	<!-- //header -->
+
+    <!-- title -->
+  <section class="single-news__intro has-overlay overlay-dark"
+        style="background-image: url(/statistics/wp-content/themes/nasdaqcsd/gfx/gfx_news.jpg);"
+    >
+    <div class="container">
+      <div class="row">
+        <div class="col-xs-12">
+          <div class="single-news__txts">
+            <h1 class="single-news__title">Shareholders</h1>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+    <!-- //title -->
+
+	<!-- layout -->
+  <main class="single-news__body">
+    <div class="container">
+      <div class="row">
+        <div class="col-xs-12 col-md-8 col-content">
+
+          <nav class="submenu-mobile-container visible-xs-block">
+            <h2 class="sr-only">Submenu - mobile</h2>
+            <div class="dropdown">
+              <button class="btn btn-default dropdown-toggle" type="button" id="mobileSubmenuDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">&mdash;<span class="caret"></span></button>
+               <ul class="sub-menu-mobile dropdown-menu">
+    <li>
+        <a href="/statistics/en/summary">Statistics home</a>
+    </li>
+    <li>
+        <a href="/statistics/en/securities">Securities</a>
+    </li>
+    <li>
+        <a href="/statistics/en/issuers">Issuers</a>
+    </li>
+    <li>
+        <a href="/statistics/en/trading-statistics">Settlement statistics</a>
+    </li>
+    <li>
+        <a href="/statistics/en/capitalization">Market capitalization</a>
+        <ul>
+            <li>
+                <a href="/statistics/en/capitalization/auc">Assets under custody</a>
+            </li>
+        </ul>
+    </li>
+    <li>
+        <a href="/statistics/en/corporate-actions">Corporate actions</a>
+    </li>
+    <li class="current-menu-ancestor">
+        <a href="/statistics/en/shareholders">Shareholders</a>
+    </li>
+</ul>            </div>
+            <br>
+          </nav>
+
+<!--           <article class="main-content"> -->
+
+          <script type="text/javascript" language="javascript">
+$(function(){
+	$("#captcha-input")
+      .attr('autocomplete','off')
+      .addClass('form-control')
+       ;
+});
+</script>
+
+<!-- //filter -->
+  <div class="database-filter__wrap">
+    <form method="get" action="/statistics/en/shareholders" id="shareholdersForm">
+      <div class="row">
+       <div class="col-sm-6">
+        <div class="form-group">
+          <label>Share</label>
+
+<select name="security" id="security" class="form-control">
+    <option value="EE3100034653">Arco Vara share</option>
+    <option value="EE3100145616">Baltika common share</option>
+    <option value="EE3100127242">EfTEN Real Estate Fund III share</option>
+    <option value="EE3100016965">Ekspress Grupp share</option>
+    <option value="EE3100004250">Harju Elekter share</option>
+    <option value="EE3100073644">LHV Group share</option>
+    <option value="EE3100060344">Linda Nektar share</option>
+    <option value="EE3100098328">MERKO EHITUS share</option>
+    <option value="EE3100039496">Nordecon share</option>
+    <option value="EE3100021635">Port of Tallinn share</option>
+    <option value="EE3100101031">PRFoods share</option>
+    <option value="EE3100006040">Pro Kapital Grupp share</option>
+    <option value="EE3100001751">Silvano Fashion Group share</option>
+    <option value="EE3100092503">Skano Group share</option>
+    <option value="EE3100004466">Tallink Grupp share</option>
+    <option value="EE0000001105">Tallinna Kaubamaja Grupp share</option>
+    <option value="EE3100026436">Tallinna Vesi A-share</option>
+    <option value="EE3100003443">Trigon Property Development share</option>
+</select>        </div>
+       </div>
+      </div>
+
+      <div class="row">
+       <div class="col-sm-6">
+        <div class="form-group">
+          <label>Security code</label>
+
+<img width="200" height="50" alt="" src="/statistics//graphics/captcha/72eefe4c2308be33e9c902ce293a2d53.png" />
+<input type="hidden" name="captcha[id]" value="72eefe4c2308be33e9c902ce293a2d53" id="captcha-id" />
+<input type="text" name="captcha[input]" id="captcha-input" value="" />        </div>
+       </div>
+      </div>
+      <div class="row">
+        <div class="col-sm-3">
+          <button type="submit" class="btn btn-block btn-primary">Search</button>
+        </div>
+      </div>
+    </form>
+
+    <br><p>Complete list of shareholders for companies traded on Nasdaq Tallinn are public information according to Estonian law - Securities Register Maintenance Act section § 7.</p>
+</div>
+<!-- //filter -->
+
+
+
+<!--           </article> -->
+        </div>
+
+        <div class="col-xs-12 col-md-4 col-sidebar">
+            <aside class="main-sidebar hidden-xs hidden-sm">
+                <nav class="sub-menu__wrap">
+                    <h2 class="sr-only">Sub menu</h2>
+
+                    <ul class="sub-menu">
+    <li>
+        <a href="/statistics/en/summary">Statistics home</a>
+    </li>
+    <li>
+        <a href="/statistics/en/securities">Securities</a>
+    </li>
+    <li>
+        <a href="/statistics/en/issuers">Issuers</a>
+    </li>
+    <li>
+        <a href="/statistics/en/trading-statistics">Settlement statistics</a>
+    </li>
+    <li>
+        <a href="/statistics/en/capitalization">Market capitalization</a>
+        <ul>
+            <li>
+                <a href="/statistics/en/capitalization/auc">Assets under custody</a>
+            </li>
+        </ul>
+    </li>
+    <li>
+        <a href="/statistics/en/corporate-actions">Corporate actions</a>
+    </li>
+    <li class="current-menu-ancestor">
+        <a href="/statistics/en/shareholders">Shareholders</a>
+    </li>
+</ul>
+                </nav>
+
+            </aside>
+        </div>
+
+      </div>
+    </div>
+  </main>
+
+
+
+
+	<!-- footer -->
+<footer class="main-footer__section">
+<div class="container">
+  <div class="row">
+
+<div class="col-sm-3"><div class="footer-block footer-block--first"><h3 class="footer-block__title">News</h3>
+
+<ul class="footer-block__nav">
+	<li class="footer-block__nav-item"><a href="/news/press-releases/">Press releases</a></li>
+	<li class="footer-block__nav-item"><a href="/news/nasdaq-csd-announcements/">Nasdaq CSD announcements</a></li>
+	<li class="footer-block__nav-item"><a href="/statistics/en/corporate-actions">Corporate actions</a></li></ul></div></div>
+<div class="col-sm-3"><div class="footer-block"><h3 class="footer-block__title">Participants</h3>
+
+<ul class="footer-block__nav">
+	<li class="footer-block__nav-item"><a href="/services/services-to-account-operators/list-of-account-operators/">List of participants</a></li></ul></div></div>
+<div class="col-sm-3"><div class="footer-block"><h3 class="footer-block__title">Links</h3>
+
+<ul class="footer-block__nav">
+	<li class="footer-block__nav-item"><a href="/services/business-model/linked-csds/">Linked CSDs</a></li>
+	<li class="footer-block__nav-item"><a href="https://nasdaqbaltic.com/market/?lang=en">Nasdaq Baltic stock exchanges</a></li>
+	<li class="footer-block__nav-item"><a href="/other-stakeholders/">Other stakeholders</a></li></ul></div></div>
+<div class="col-sm-3"><div class="footer-block"><h3 class="footer-block__title">Nasdaq CSD</h3>
+
+<ul class="footer-block__nav">
+	<li class="footer-block__nav-item"><a href="tel:%20+371%206721%202431%20">Tel: +371 6721 2431</a></li>
+	<li class="footer-block__nav-item"><a href="mailto:csd@nasdaq.com">csd@nasdaq.com</a></li></ul></div></div>
+     </div>
+    </div>
+</footer>
+	<!-- //footer -->
+
+</div>
+<!-- //wrapper -->
+
+</body>
+</html>

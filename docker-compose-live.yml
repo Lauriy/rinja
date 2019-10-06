@@ -22,6 +22,7 @@ services:
       - ./credentials:/home/docker/rinja/rinja/credentials
       - ./settings.py:/home/docker/rinja/rinja/settings.py
       - ./static:/home/docker/rinja/static-collected
+      - ./fixtures:/home/docker/rinja/rinja/fixtures
     environment:
       - APP_SECRET_KEY=moxqms%4zujsgd!c*y#36d!7#dh2e)+of-zla+)z9m09e)cvb%
       - APP_DB_PASSWORD=saladus
