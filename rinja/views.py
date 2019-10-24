@@ -1,41 +1,41 @@
-import bs4
-import requests
+from typing import Any, Dict
+
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.core.files.base import ContentFile
-from django.core.urlresolvers import reverse_lazy
-from django.http import HttpResponseRedirect
-from django.views.generic import CreateView, TemplateView
-
-from forms import CaptchaAddForm
-from rinja.models import Captcha
+from django.contrib.auth.models import User
+from django.urls import reverse
+from django.views.generic import UpdateView, TemplateView
 
 
-class HomeView(TemplateView):
-    template_name = 'home.html'
+class MarketListingView(TemplateView):
+    template_name = 'stocks.html'
+
+    def get_context_data(self, **kwargs: Any) -> Dict[str, Any]:
+        data = super().get_context_data(**kwargs)
+        watchlist_param = self.request.GET.get('watchlist', 'false')
+        data['is_watchlist'] = watchlist_param == 'true'
+
+        return data
 
 
-class CaptchaCreate(LoginRequiredMixin, CreateView):
-    model = Captcha
-    form_class = CaptchaAddForm
-    success_url = reverse_lazy('captcha_add')
-    captcha_image_url_template = 'http://statistics.e-register.ee/graphics/captcha/%s.png'
+class ProfileEditView(LoginRequiredMixin, UpdateView):
+    template_name = 'profile_edit.html'
+    model = User
+    fields = []
 
-    def get(self, request, *args, **kwargs):
-        self.object = None
-        ctx = self.get_context_data()
-        captcha_page = requests.get('http://statistics.e-register.ee/et/shareholders')
-        soup = bs4.BeautifulSoup(captcha_page.text, 'html.parser')
-        captcha_id = soup.select('#captcha-id')[0]['value']
-        ctx['form'] = CaptchaAddForm(initial={'md5': captcha_id})
-        ctx['captcha_image_url'] = self.captcha_image_url_template % captcha_id
+    def get_object(self, queryset=None):
+        return self.request.user
 
-        return self.render_to_response(ctx)
+    def get_success_url(self):
+        return reverse('account_profile')
 
-    def form_valid(self, form):
-        self.object = form.save(commit=False)
-        # TODO: Validate the answer against e-register
-        image_content = ContentFile(requests.get(self.captcha_image_url_template % form.cleaned_data['md5']).content)
-        self.object.image.save('%s_%s.png' % (self.object.answer, self.object.md5), image_content, False)
-        self.object.save()
-
-        return HttpResponseRedirect(self.get_success_url())
+# def all_stocks(request):
+#     template = loader.get_template('stocks.html')
+#     stocks = Stock.objects.order_by('ticker')
+#     for stock in stocks:
+#         if stock.nominal_market_cap and stock.latest_real_market_cap:
+#             stock.mcap_ratio = round(stock.latest_real_market_cap / stock.nominal_market_cap, 2)
+#     context = {
+#         'stocks': stocks
+#     }
+#
+#     return HttpResponse(template.render(context, request))

@@ -18,7 +18,7 @@ import bs4
 import cv2
 import numpy as np
 import requests
-from pyfann import libfann
+import fann2.libfann as libfann
 
 __title__ = 'chaptcha.py'
 __version__ = '0.0.1'
@@ -68,7 +68,7 @@ def get_ch_data(img):
     return data
 
 
-POSSIBLE_SYMBOLS = 'abcdefghijklmnopqrstuvwxyz0123456789'
+POSSIBLE_SYMBOLS = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
 
 
 def make_ann_output(symbol):
@@ -170,7 +170,7 @@ def segment(img):
             was_blank = True
             prev_x = x
         x += 1
-    print (first_ch_x)
+    # print (first_ch_x)
     blanks = [b for b in blanks if b[1] - b[0] >= BLANK_THRESHHOLD]
     blanks = sorted(blanks, key=lambda b: b[1] - b[0], reverse=True)[:5]
     # No more than one glued pair currently.
@@ -178,7 +178,7 @@ def segment(img):
     blanks = sorted(blanks, key=lambda b: b[0])
     # Add last (imaginary) blank to simplify following loop.
     blanks.append((prev_x if was_blank else CAPTCHA_WIDTH, 0))
-    print (blanks)
+    # print (blanks)
 
     # blanks = [(87, 89), (106, 108), (116, 118), (133, 135)]
     # first_ch_x = 67
@@ -317,9 +317,14 @@ def vis(fpath):
 
 
 def train(captchas_dir):
+    # 20 x 45 = 90 pixels
     NUM_INPUT = CH_WIDTH * CH_HEIGHT
-    NUM_NEURONS_HIDDEN = NUM_INPUT // 3
-    NUM_OUTPUT = 36
+    # 62 possible symbols
+    NUM_OUTPUT = len(POSSIBLE_SYMBOLS)
+    # 30 hidden neurons
+    # NUM_NEURONS_HIDDEN = NUM_INPUT // 3
+    # NUM_NEURONS_HIDDEN = int((NUM_INPUT + NUM_OUTPUT) / 2)
+    NUM_NEURONS_HIDDEN = 126 # 2/3 INPUT + OUTPUT rule of thumb
     ann = libfann.neural_net()
     ann.create_standard_array((NUM_INPUT, NUM_NEURONS_HIDDEN, NUM_OUTPUT))
     # ann.set_activation_function_hidden(libfann.SIGMOID)

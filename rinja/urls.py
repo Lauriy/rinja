@@ -1,10 +1,20 @@
+from django.conf import settings
 from django.conf.urls import url
 from django.contrib import admin
+from django.urls import path, include
 
-from rinja.views import CaptchaCreate, HomeView
+from rinja import views
+from rinja.views import ProfileEditView, MarketListingView
 
 urlpatterns = [
-    url(r'^$', HomeView.as_view(), name='home'),
-    url(r'^captcha/add', CaptchaCreate.as_view(), name='captcha_add'),
-    url(r'^admin/', admin.site.urls),
+    path('admin/', admin.site.urls),
+    path('', MarketListingView.as_view(), name='home'),
+    url(r'^api/v1/', include('rinja.api.urls')),
+    url(r'^accounts/', include('allauth.urls')),
+    url(r'^accounts/profile/', ProfileEditView.as_view(), name='account_profile'),
 ]
+
+if settings.DEBUG:
+    import debug_toolbar
+
+    urlpatterns = [path('__debug__/', include(debug_toolbar.urls)), ] + urlpatterns

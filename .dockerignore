@@ -6,9 +6,10 @@
 /.coverage
 /my.net
 /last_result.txt
-/htmlcov/
+/stocks.indoorsman.ee.nginx
+/.pytest_cache/
+/.htmlcov/
 /.idea/
-__pycache__/
 /media/
+__pycache__/
 /static-cache/
-

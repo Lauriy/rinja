@@ -1,9 +1,5 @@
 from django import forms
 
-from models import Captcha
 
-
-class CaptchaAddForm(forms.ModelForm):
-    class Meta:
-        model = Captcha
-        fields = ['md5', 'answer']
+class ApiStocksListingRequestSchema(forms.Form):
+    watchlist = forms.BooleanField(required=False, initial=False)

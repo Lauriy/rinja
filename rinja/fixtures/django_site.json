@@ -1,0 +1,10 @@
+[
+  {
+    "model": "sites.site",
+    "pk": 1,
+    "fields": {
+      "domain": "stocks.indoorsman.ee",
+      "name": "stocks.indoorsman.ee"
+    }
+  }
+]
