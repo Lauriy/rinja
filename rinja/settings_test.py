@@ -1,6 +1,6 @@
-from rinja.settings import *
+from rinja.settings import *  # noqa
 
-assert ROOT_URLCONF
+assert ROOT_URLCONF  # noqa
 
 DATABASES = {
     'default': {

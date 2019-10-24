@@ -1,5 +1,3 @@
-import json
-import pickle
 from typing import Optional
 
 import bs4
@@ -8,7 +6,6 @@ import xlrd
 from django.core.files.base import ContentFile
 from google.cloud import vision
 from google.cloud.vision import types
-from soupsieve import SoupSieve
 
 
 class Scraper:

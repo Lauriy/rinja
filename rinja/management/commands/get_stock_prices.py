@@ -1,26 +1,23 @@
 import datetime
-import decimal
 
 import bs4
 import requests
 from django.core.management.base import BaseCommand
-
-from rinja.models import Stock
 
 
 class Command(BaseCommand):
     help = 'Scrapes OMXT stock prices - intended to be run hourly when market is open'
 
     def handle(self, *args, **options):
-        all_supported_stocks = Stock.objects.all()
+        # all_supported_stocks = Stock.objects.all()
         now = datetime.datetime.now()
         url = f'https://www.nasdaqbaltic.com/statistics/en/shares?date={now.year}-{now.month}-{now.day}'
         prices_response = requests.get(url)
         tables = bs4.BeautifulSoup(prices_response.text, 'html.parser').select('.biglisttable.table-responsive > table')
         main_list = tables[0]
-        #print(main_list)
-        secondary_list = tables[1]
-        first_north_list = tables[2]
+        # print(main_list)
+        # secondary_list = tables[1]
+        # first_north_list = tables[2]
         # FIXME: DRY
         for row in main_list.select('tbody > tr')[:1]:
             print(row)

@@ -9,6 +9,7 @@ django-redis-cache==2.1.0
 django-stubs==1.1.0
 djangorestframework==3.10.3
 djangorestframework-stubs==1.0.0
+flake8==3.7.8
 hiredis==1.0.0
 google-cloud-vision==0.39.0
 markdown==3.1.1
