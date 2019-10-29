@@ -40,7 +40,10 @@ class Scraper:
         while not captcha_input or len(captcha_input) != 4:
             print('Trying to retrieve 4-letter CAPTCHA answer...')
             captcha_page = requests.get(captcha_retrieval_url)
-            session_id = captcha_page.cookies['PHPSESSID']
+            try:
+                session_id = captcha_page.cookies['PHPSESSID']
+            except KeyError:  # Happens sometimes
+                continue
             soup = bs4.BeautifulSoup(captcha_page.text, 'html.parser')
             captcha_id = soup.select('#captcha-id')[0]['value']
             captcha_image_url = f'https://nasdaqcsd.com/statistics/graphics/captcha/{captcha_id}.png'
