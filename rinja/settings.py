@@ -1,5 +1,9 @@
 import os
 
+from dotenv import load_dotenv
+
+load_dotenv()
+
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 SECRET_KEY = os.environ.get('APP_SECRET_KEY', None)
@@ -9,6 +13,7 @@ DEBUG = os.environ.get('APP_DEBUG') == '1'
 ALLOWED_HOSTS = []
 
 INSTALLED_APPS = [
+    'modeltranslation',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -72,10 +77,10 @@ DATABASES = {
         'NAME': 'rinja',
         'USER': 'rinja',
         'PASSWORD': os.environ.get('APP_DB_PASSWORD', 'saladus'),
-        'HOST': 'postgres',
-        'PORT': '5432'
-        # 'HOST': 'localhost',
-        # 'POST': '5434'
+        # 'HOST': 'postgres',
+        # 'PORT': '5432'
+        'HOST': 'localhost',
+        'PORT': '5434'
     }
 }
 
@@ -132,12 +137,19 @@ USE_I18N = True
 USE_L10N = True
 USE_TZ = True
 
+gettext = lambda s: s
+
+LANGUAGES = (
+    ('en', gettext('English')),
+    ('et', gettext('Estonian')),
+)
+
 STATIC_URL = '/static/'
 
 CACHES = {
     'default': {
         'BACKEND': 'redis_cache.RedisCache',
-        'LOCATION': 'redis:6379',
+        'LOCATION': 'localhost:6379',
         'OPTIONS': {
             'DB': 1,
             'PARSER_CLASS': 'redis.connection.HiredisParser',

@@ -1,3 +1,5 @@
+![Python application](https://github.com/Lauriy/rinja/workflows/Rinja/badge.svg)
+
 # Experiment to hunt for stock tips on OMXT (Tallinn Stock Exchange)
 
 ## Running locally
@@ -16,6 +18,7 @@
 - positions are updated with a delay of some days (up to 3?)
 - general stock listing price delay should be ~ 15 minutes
 - default root user: `python manage.py loaddata rinja/fixtures/auth_user.json` or create one with `python manage.py createsuperuser`
+- static list of stocks: `python manage.py loaddata rinja/fixtures/rinja_stock.json`
 - scrape CAPTCHAS with the help of Google Vision: `python manage.py scrape_captcha_examples`
 
 ## Currently unavailable without some work

@@ -1,5 +1,9 @@
+from enum import Enum
+
 from django.contrib.auth.models import User
 from django.db import models
+from django.utils.translation import ugettext_lazy as _
+from django_enum_choices.fields import EnumChoiceField
 from djmoney.models.fields import MoneyField
 
 currency_choices = [('EUR', 'Euro')]
@@ -41,11 +45,26 @@ class StockPosition(models.Model):
     # TODO: Think about this
     # at_date = models.DateField(blank=False, null=False)
     is_insider = models.BooleanField(default=False)
+    is_pro = models.BooleanField(default=False)
+    checked = models.DateTimeField()
     created = models.DateTimeField(auto_now_add=True)
     modified = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return f'{self.stock} - {self.holder} - {self.amount}'
+
+
+class StockPositionChangeTypes(Enum):
+    BUY = _('buy')
+    SELL = _('sell')
+
+
+class StockPositionNetChange(models.Model):
+    stock_position = models.ForeignKey(StockPosition, on_delete=models.CASCADE)
+    type = EnumChoiceField(StockPositionChangeTypes)
+    amount = models.IntegerField(blank=False, null=False)
+    created = models.DateTimeField(auto_now_add=True)
+    modified = models.DateTimeField(auto_now=True)
 
 
 # Keep these around to train own neural net once Google credit runs out: https://github.com/Kagami/chaptcha

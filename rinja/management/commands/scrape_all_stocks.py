@@ -1,3 +1,4 @@
+import datetime
 import re
 
 import bs4
@@ -7,7 +8,7 @@ from django.core.management.base import BaseCommand
 from google.cloud import vision
 from google.cloud.vision import types
 
-from rinja.models import Stock, Captcha, StockPosition
+from rinja.models import Stock, Captcha, StockPosition, StockPositionNetChange, StockPositionChangeTypes
 
 
 class Command(BaseCommand):
@@ -17,9 +18,9 @@ class Command(BaseCommand):
         all_supported_stocks = Stock.objects.all()
         captcha_retrieval_url = 'https://nasdaqcsd.com/statistics/en/shareholders'
         google_vision_client = vision.ImageAnnotatorClient()
-        for stock in all_supported_stocks:
-            if stock.ticker == 'MRK1T':
-                continue
+        for stock in all_supported_stocks[:1]:
+            # if stock.ticker == 'MRK1T':
+            #     continue
             print(f'Trying stock {stock.ticker}')
             shareholders_retrieved = False
             while shareholders_retrieved is False:
@@ -69,10 +70,64 @@ class Command(BaseCommand):
                     amount = int(
                         re.sub(r'\s+', '', shareholder_columns[1].decode_contents(), flags=re.UNICODE).replace(',',
                                                                                                                ''))
-                    StockPosition(
-                        stock=stock,
-                        holder=name,
-                        amount=amount,
-                        # at_date=now - datetime.timedelta(days=settings.STOCK_HOLDING_REPORT_DELAY_DAYS)
-                    ).save()
+                    # Sadly we can only match by names...so 2 Jaan Tamms may inevitably happen to have the same amount
+                    # of stocks on hand at the same moment...
+                    # is_exact_existing_position = StockPosition.objects.filter(stock=stock, holder=name,
+                    #                                                           amount=amount).exists()
+                    existing_positions = StockPosition.objects.filter(stock=stock, holder=name).all()
+                    exact_match_found = False
+                    for position in existing_positions:
+                        if position.amount == amount:
+                            print(f'Exact matching position found for {amount} {stock} and {name}, skipping update.')
+                            exact_match_found = True
+                            position.checked = datetime.datetime.now()
+                            position.save()
+                    if exact_match_found:
+                        continue
+                    # TODO: DRY
+                    if len(existing_positions) > 1:
+                        print(f'Complex situation detected, these holdings are all a match:')
+                        for position in existing_positions:
+                            print(position)
+                            position.checked = datetime.datetime.now()
+                            position.save()
+                        print('Updating the first one if need be')
+                        if existing_positions[0].amount != amount:
+                            existing_positions[0].amount = amount
+                            existing_positions[0].save()
+                            StockPositionNetChange(
+                                stock_position=existing_positions[0],
+                                type=StockPositionChangeTypes.BUY if amount > existing_positions[
+                                    0].amount else StockPositionChangeTypes.SELL,
+                                amount=abs(existing_positions[0].amount - amount)
+                            ).save()
+                    if len(existing_positions) == 0:
+                        # TODO: Don't mark initial state as buys
+                        print(f'Saving fresh position {amount} {stock} and {name}')
+                        new_position = StockPosition(
+                            stock=stock,
+                            holder=name,
+                            amount=amount,
+                            checked=datetime.datetime.now()
+                            # at_date=now - datetime.timedelta(days=settings.STOCK_HOLDING_REPORT_DELAY_DAYS)
+                        )
+                        new_position.save()
+                        StockPositionNetChange(
+                            stock_position=new_position,
+                            type=StockPositionChangeTypes.BUY,
+                            amount=amount
+                        ).save()
+                    if len(existing_positions) == 1:
+                        print(f'Exactly one holding found')
+                        if existing_positions[0].amount != amount:
+                            existing_positions[0].amount = amount
+                            StockPositionNetChange(
+                                stock_position=existing_positions[0],
+                                type=StockPositionChangeTypes.BUY if amount > existing_positions[
+                                    0].amount else StockPositionChangeTypes.SELL,
+                                amount=abs(existing_positions[0].amount - amount)
+                            ).save()
+                        existing_positions[0].checked = datetime.datetime.now()
+                        existing_positions[0].save()
                 shareholders_retrieved = True
+# TODO: Delete all that didn't get checked - means they sold

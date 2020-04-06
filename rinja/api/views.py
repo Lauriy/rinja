@@ -31,7 +31,7 @@ class AllStocksViewset(viewsets.ViewSet):
         if is_watchlist:
             if not request.user:
                 raise AuthenticationFailed
-            flat_watchlist_tickers = WatchlistEntry.objects.filter(user=request.user).values_list('ticker', flat=True)
+            flat_watchlist_tickers = WatchlistEntry.objects.filter(user_id=request.user.id).values_list('ticker', flat=True)
             stocks = [stock for stock in stocks if stock['Ticker'] in flat_watchlist_tickers]
         serializer = self.serializer_class(instance=stocks, many=True)
 

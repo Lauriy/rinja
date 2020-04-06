@@ -1,4 +1,4 @@
-FROM python:3.7 AS builder
+FROM python:3.8 AS builder
 
 WORKDIR /home/docker/rinja
 
@@ -11,7 +11,7 @@ RUN pip install --upgrade setuptools pip wheel && \
 
 ENTRYPOINT ["pytest"]
 
-FROM python:3.7-slim AS deployer
+FROM python:3.8-slim AS deployer
 
 LABEL maintainer="Lauri Elias <lauri.elias@indoorsman.ee>"
 

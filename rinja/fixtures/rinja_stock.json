@@ -394,5 +394,27 @@
       "created": "2019-08-18T20:04:56.890Z",
       "modified": "2019-08-18T21:31:45.140Z"
     }
+  },
+  {
+    "model": "rinja.stock",
+    "pk": 19,
+    "fields": {
+      "ticker": "CPA1T",
+      "name": "Coop Pank share",
+      "issuer": "Coop Pank aktsiaselts",
+      "total_issued": 89456166,
+      "registry_code": 10237832,
+      "isin": "EE3100007857",
+      "nominal_share_price_currency": "EUR",
+      "nominal_share_price": null,
+      "latest_market_share_price_currency": "EUR",
+      "latest_market_share_price": "0.95",
+      "nominal_market_cap_currency": "EUR",
+      "nominal_market_cap": null,
+      "latest_real_market_cap_currency": "EUR",
+      "latest_real_market_cap": "84983357.7",
+      "created": "2020-04-07T20:04:56.890Z",
+      "modified": "2020-04-07T21:31:45.140Z"
+    }
   }
 ]
