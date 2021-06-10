@@ -1,5 +1,5 @@
 beautifulsoup4==4.9.0
-django==2.2.12
+django==2.2.24
 django-allauth==0.41.0
 django-compressor==2.4
 django-debug-toolbar==2.2
